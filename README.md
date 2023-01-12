@@ -265,7 +265,7 @@ systemctl status filebeat
 ```
 ***filebeat has been installed and configured***
 
-## Installing and configuring Beats
+## Installing and configuring Logstash
 1. Install Logstash by running the following command:
 ```
 sudo apt-get install logstash
