@@ -5,8 +5,11 @@
 **The Elastic Stack has four main components:**
 
 **Elasticsearch**: A distributed search and analytics engine built on Apache Lucene. Elasticsearch has quickly become the most popular search engine and is commonly used for log analytics, full-text search, security intelligence, business analytics, and operational intelligence use cases
+
 **Logstash**: Logstash is an open-source data ingestion tool that allows you to collect data from a variety of sources, transform it, and send it to your desired destination.
+
 **Kibana**: Kibana is a data visualization and exploration tool used for log and time-series analytics, application monitoring, and operational intelligence use cases. It offers powerful and easy-to-use features such as histograms, line graphs, pie charts, heat maps, and built-in geospatial support.
+
 **Beats**: lightweight, single-purpose data shippers that can send data from hundreds or thousands of machines to either Logstash or Elasticsearch.
 
 ## Prerequisites
@@ -70,6 +73,8 @@ xpack.security.audit.enabled: true
 xpack.license.self_generated.type: "basic"
 action.auto_create_index: .monitoring*,.watches,.triggered_watches,.watcher-history*,.ml*
 ```
+![image](https://user-images.githubusercontent.com/121095320/212024739-37918298-393c-4e38-8ac5-c5d678b19775.png)
+
 
 6. Start the Elasticsearch service by running a systemctl command:
 ```
@@ -102,11 +107,12 @@ sudo apt-get install kibana
 ```
 sudo nano /etc/kibana/kibana.yml
 ```
-3. Delete the # sign at the beginning of the following lines to activate them:
+3. Delete the # sign at the beginning of the following lines and enter the details to activate them:
 ```
 #server.port: 5601
 #server.host: "Your-system-IP"
 #serverpublicBaseUrl: "https://Your-system-IP:5601"
+#sercer.name: "hostname"
 ```
 4. Start the kibana service by running a systemctl command:
 ```
@@ -129,16 +135,20 @@ cd /usr/share/elasticsearch/bin/
 ```
 **Open kibana in browser using http and paste the enrollment token**
 
+![image](https://user-images.githubusercontent.com/121095320/212025124-3983e360-afdd-4d3b-b873-07b9ac52d9c5.png)
+
 8. Generate Verification code using below command:
 ```
 cd /usr/share/kibana/bin
 ./kibana-verification-code
 ```
-9. Enter the verification code and login:
+9. Enter the generated the verification code and login using:
 ```
 username: elastic
 Password: (which we copied elastic built-in superuser password) 
 ```
+![image](https://user-images.githubusercontent.com/121095320/212025373-b62e1851-7a19-45df-97ed-dff1bf71d522.png)
+
 10. TLS communication between browser to kibana(follow the below command):
 ```
 cd /usr/share/elasticsearch/
@@ -153,6 +163,7 @@ unzip elastic-stack-ca.zip
 ```
 mkdir /etc/kibana/certs
 cp /usr/share/elasticsearch/ca/* /etc/kibana/certs/
+ls /etc/kibana/certs/   -verify wheather the file is available
 ```
 11. Generate kibana encryption key using below command:
 ```
@@ -180,3 +191,109 @@ systemctl restart kibana.service
 systemctl enable kibana.service
 ```
 ***Kibana has been installed and configured***
+
+## Installing and configuring Beats
+The Elastic Stack uses several lightweight data shippers called Beats to collect data from various sources and transport them to Logstash or Elasticsearch. Here are the Beats that are currently available from Elastic:
+
+- [Filebeat](https://www.elastic.co/beats/filebeat) : collects and ships log files.
+- [Metricbeat](https://www.elastic.co/beats/metricbeat) : collects metrics from your systems and services.
+- [Packetbeat](https://www.elastic.co/beats/packetbeat) : collects and analyzes network data.
+- [Winlogbeat](https://www.elastic.co/beats/winlogbeat) : collects Windows event logs.
+- [Auditbeat](https://www.elastic.co/beats/auditbeat) : collects Linux audit framework data and monitors file integrity.
+- [Heartbeat](https://www.elastic.co/beats/heartbeat) : monitors services for their availability with active probing.
+
+In this tutorial we will use Filebeat to forward local logs to our Elastic Stack
+
+1. Install filebeat with the following command:
+```
+sudo apt-get install filebeat
+```
+2. Configure Filebeat with the following command:
+```
+sudo nano /etc/filebeat/filebeat.yml
+```
+3. You should see a configuration file with several different entries and descriptions. Scroll down to find the following entries:
+```
+#setup.dashboards.enabled: false  (In Dashboard portion)
+output.elasticsearch:             (In Elasticsearch portion)
+  hosts: ["localhost:9200"]
+  #protocol: "https"
+ 
+  #username: "elastic"
+  #password: "password"
+```
+ uncomment the lines by deleting the hash (#) sign at the beginning and change the dashboard.enabled true.
+ And Edit the following in Elasticsearch portion.
+```
+setup.dashboards.enabled: true  (In Dashboard portion)
+output.elasticsearch:           (In Elasticsearch portion)
+  hosts: ["Configured - IP:9200"]
+  protocol: "https"
+ 
+  username: "elastic"
+  password: "Password of elasticsearch"
+  ssl.verification_mode: "none"
+```
+  Edit and add the following command in Kibana portion in filebeat.yml file.
+```
+  host: ["https://configuredIP:5601"]       (In kibana portion) 
+  username: "elastic"
+  password: "Password of elasticsearch"
+  ssl.verification_mode: "none"
+```
+4. Filebeat logs check command:
+```
+filebeat setup -e
+```
+5. To check the modules in filebeat:
+```
+filebeat modules list
+```
+***Note: Based on your requirement, you can enable the modules. The functionality of Filebeat can be extended with*** [Filebeat modules](https://www.elastic.co/guide/en/beats/filebeat/8.6/filebeat-modules.html).
+
+6. In this tutorial we will use the system module, which collects and parses logs created by the system logging service
+```
+filebeat modules enable system
+nano /etc/filebeat/modules.d/system.yml
+Enable the syslog and authentication status from false to true
+```
+7. Start and enable Filebeat and check the status using:
+```
+systemctl start filebeat
+systemctl enable filebeat
+systemctl status filebeat
+```
+***filebeat has been installed and configured***
+
+## Installing and configuring Beats
+1. Install Logstash by running the following command:
+```
+sudo apt-get install logstash
+```
+2. Start and enable logstash and check the status using:
+```
+systemctl start logstash
+systemctl enable logstash
+systemctl status logstash
+```
+3. Configure Logstash: 
+```
+Logstash is a highly configurable component of the ELK stack. 
+Once installed, configure its INPUT, FILTERS, and OUTPUT pipelines to your specific needs.
+/etc/logstash/conf.d/ contains all custom Logstash configuration files.
+```
+![image](https://user-images.githubusercontent.com/121095320/212022816-1c011e2e-0f78-4d06-a664-1ab3c55fb415.png)
+
+For more information kindly check [logstash](https://www.elastic.co/guide/en/logstash/8.6/setup-logstash.html)
+
+# Conclusion
+**You now know how to set up the Elastic Stack to gather and examine system logs. We advise identifying your demands so that you can begin customising ELK**
+
+***Additional Reference Materials***
+
+Fore more detailed information on ELK, visit the Elastic configuration guides below:
+
+- [Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/current/install-elasticsearch.html)
+- [Kibana](https://www.elastic.co/guide/en/kibana/current/install.html)
+- [Logstash](https://www.elastic.co/guide/en/logstash/current/installing-logstash.html)
+- [Beats](https://www.elastic.co/guide/en/beats/libbeat/current/beats-reference.html)
