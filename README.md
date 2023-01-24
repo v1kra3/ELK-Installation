@@ -131,16 +131,16 @@ sudo systemctl status kibana.service
 7. Create an enrollment token using below command and copy the token:
 ```
 cd /usr/share/elasticsearch/bin/
-./elasticsearch-create-enrollment-token -s kibana
+sudo ./elasticsearch-create-enrollment-token -s kibana
 ```
-**Open kibana in browser using http and paste the enrollment token**
+**Open kibana in browser using http and paste the enrollment token and click configure elastic**
 
 ![image](https://user-images.githubusercontent.com/121095320/212025124-3983e360-afdd-4d3b-b873-07b9ac52d9c5.png)
 
 8. Generate Verification code using below command:
 ```
 cd /usr/share/kibana/bin
-./kibana-verification-code
+sudo ./kibana-verification-code
 ```
 9. Enter the generated the verification code and login using:
 ```
@@ -152,11 +152,11 @@ Password: (which we copied elastic built-in superuser password)
 10. TLS communication between browser to kibana(follow the below command):
 ```
 cd /usr/share/elasticsearch/
-./bin/elasticsearch-certutil csr -name (Name) -dns (Name), System IP
+sudo ./bin/elasticsearch-certutil csr -name (Name) -dns (Name), System IP
 Ex ./bin/elasticsearch-certutil csr -name elk -dns elk, 192.168.10.89
 ls  you will able to see csr-bundle
 unzip csr-bundle.zip
-./bin/elasticsearch-certutil ca -pem
+sudo ./bin/elasticsearch-certutil ca -pem
 unzip elastic-stack-ca.zip
 ```
 **Move certificate to kibana folder and configure.(Follow below command)**
@@ -168,13 +168,13 @@ ls /etc/kibana/certs/   -verify wheather the file is available
 11. Generate kibana encryption key using below command:
 ```
 cd /usr/share/kibana/bin/
-./kibana-encryption-keys generate
+sudo ./kibana-encryption-keys generate
 ```
 *Note: Copy the all xpack key which will be located under settings* 
 
 12. Kibana configuration command:
 ```
-nano /etc/kibana/kibana.yml
+sudo nano /etc/kibana/kibana.yml
 ```
 Find the System(Kibana server) and delete the hash(#) and mention the certificate path
 ```   
@@ -187,8 +187,8 @@ paste the xpack key in bottom of the kibana.yml
 ![image](https://user-images.githubusercontent.com/121095320/211802787-33a566c5-47a2-4a4a-b5fa-fc6540c77624.png)
 12. Restart/Enable kibana to start on boot
 ```
-systemctl restart kibana.service
-systemctl enable kibana.service
+sudo systemctl restart kibana.service
+sudo systemctl enable kibana.service
 ```
 ***Kibana has been installed and configured***
 
@@ -259,9 +259,9 @@ Enable the syslog and authentication status from false to true
 ```
 7. Start and enable Filebeat and check the status using:
 ```
-systemctl start filebeat
-systemctl enable filebeat
-systemctl status filebeat
+sudo systemctl start filebeat
+sudo systemctl enable filebeat
+sudo systemctl status filebeat
 ```
 ***filebeat has been installed and configured***
 
@@ -272,9 +272,9 @@ sudo apt-get install logstash
 ```
 2. Start and enable logstash and check the status using:
 ```
-systemctl start logstash
-systemctl enable logstash
-systemctl status logstash
+sudo systemctl start logstash
+sudo systemctl enable logstash
+sudo systemctl status logstash
 ```
 3. Configure Logstash: 
 ```
