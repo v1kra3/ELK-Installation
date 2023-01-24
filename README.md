@@ -66,7 +66,7 @@ sudo nano /etc/elasticsearch/elasticsearch.yml
 network.host: localhost (or system IP)
 http.port: 9200
 ```
-  Paste the beow xpack modules in Begin security and auto configuration:
+  Paste the beow xpack modules in Begin security and auto configuration and save the yml file:
 ```  
 xpack.monitoring.collection.enabled: true
 xpack.security.audit.enabled: true
@@ -107,7 +107,7 @@ sudo apt-get install kibana
 ```
 sudo nano /etc/kibana/kibana.yml
 ```
-3. Delete the # sign at the beginning of the following lines and enter the details to activate them:
+3. Delete the # sign at the beginning of the following lines and enter the details to activate them and save the yml file:
 ```
 #server.port: 5601
 #server.host: "Your-system-IP"
@@ -153,17 +153,17 @@ Password: (which we copied elastic built-in superuser password)
 ```
 cd /usr/share/elasticsearch/
 sudo ./bin/elasticsearch-certutil csr -name (Name) -dns (Name), System IP
-Ex ./bin/elasticsearch-certutil csr -name elk -dns elk, 192.168.10.89
-ls  you will able to see csr-bundle
-unzip csr-bundle.zip
+Ex sudo ./bin/elasticsearch-certutil csr -name elk -dns elk, 192.168.10.89
+sudo ls  you will able to see csr-bundle
+sudo unzip csr-bundle.zip
 sudo ./bin/elasticsearch-certutil ca -pem
-unzip elastic-stack-ca.zip
+sudo unzip elastic-stack-ca.zip
 ```
 **Move certificate to kibana folder and configure.(Follow below command)**
 ```
-mkdir /etc/kibana/certs
-cp /usr/share/elasticsearch/ca/* /etc/kibana/certs/
-ls /etc/kibana/certs/   -verify wheather the file is available
+sudo mkdir /etc/kibana/certs
+sudo cp /usr/share/elasticsearch/ca/* /etc/kibana/certs/
+sudo ls /etc/kibana/certs/   -verify wheather the file is available
 ```
 11. Generate kibana encryption key using below command:
 ```
@@ -243,11 +243,11 @@ output.elasticsearch:           (In Elasticsearch portion)
 ```
 4. Filebeat logs check command:
 ```
-filebeat setup -e
+sudo filebeat setup -e
 ```
 5. To check the modules in filebeat:
 ```
-filebeat modules list
+sudo filebeat modules list
 ```
 ***Note: Based on your requirement, you can enable the modules. The functionality of Filebeat can be extended with*** [Filebeat modules](https://www.elastic.co/guide/en/beats/filebeat/8.6/filebeat-modules.html).
 
